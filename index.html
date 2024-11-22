@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Randkowy by BenG</title>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #ff7b7b;
+            font-size: 3em;
+            margin-top: 30px;
+            font-weight: bold;
+        }
+
+        p {
+            font-size: 1.2em;
+            color: #555;
+        }
+
+        .input-container {
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 1.2em;
+            width: 250px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1.2em;
+            background-color: #ff7b7b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #ff4b4b;
+        }
+
+        #quiz {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            margin: 20px auto;
+            text-align: left;
+        }
+
+        #quiz select {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 1em;
+            margin: 10px 0;
+            width: 100%;
+        }
+
+        #quiz button {
+            padding: 10px 20px;
+            font-size: 1.2em;
+            background-color: #ff7b7b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #quiz button:hover {
+            background-color: #ff4b4b;
+        }
+
+        #result {
+            font-size: 1.5em;
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+
+        .emoji {
+            font-size: 2em;
+        }
+
+        .animated-gif {
+            margin-top: 20px;
+        }
+
+        .question-container {
+            margin-bottom: 15px;
+        }
+
+        .question-container p {
+            font-size: 1.1em;
+            color: #333;
+        }
+
+        .question-container select {
+            padding: 10px;
+            font-size: 1.2em;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 100%;
+        }
+
+        .input-container {
+            margin-bottom: 20px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div style="text-align: center; margin-top: 50px;">
+        <h1>Quiz Randkowy by BenG <span class="emoji">😩</span></h1>
+        <p>Podaj swój nick z Yubo:</p>
+        <div class="input-container">
+            <input type="text" id="nickname" placeholder="Twój nick" required>
+        </div>
+        <button onclick="startQuiz()">Rozpocznij</button>
+    </div>
+
+    <div id="quiz" style="display: none; text-align: center; margin-top: 20px;">
+        <!-- Quiz zostanie tutaj wygenerowany dynamicznie -->
+    </div>
+
+    <div id="result" style="text-align: center; margin-top: 20px;"></div>
+
+    <script>
+        // Inicjalizacja EmailJS
+        emailjs.init("zRKZWRo52XnkyoBOv"); 
+
+        // Definicja pytań
+        const pytania = [
+            {
+                id: "hairColor",
+                text: "Kolor włosów?",
+                options: ["Blond", "Brunet", "Czarny", "Rudy"],
+                wykluczone: ["Rudy"] // Wykluczone odpowiedzi
+            },
+            {
+                id: "bosnianFamily",
+                text: "Czy posiadasz bośniacką rodzinę w piwnicy?",
+                options: ["Tak"],
+                poprawne: ["Tak"] // Wymagana odpowiedź
+            },
+            {
+                id: "hellBook",
+                text: "Czy napisałaś do mnie z powodu książki 'Hell'?",
+                options: ["Tak", "Nie"],
+                wykluczone: ["Tak"]
+            },
+            {
+                id: "drugs",
+                text: "Czy stosujesz jakieś używki?",
+                options: ["Papierosy", "eFajki", "Ziółko", "Twarde", "Żadne"],
+                wykluczone: ["Twarde"]
+            },
+            {
+                id: "drinkFrequency",
+                text: "Jak często pijesz?",
+                options: [
+                    "Codziennie",
+                    "Towarzysko w weekendy",
+                    "Nie piję",
+                    "Lubię sobie romperka czasem pierdolnąć"
+                ]
+            },
+            {
+                id: "largePytong",
+                text: "Czy posiadasz duży pytong?",
+                options: ["Tak"],
+                poprawne: ["Tak"]
+            },
+            {
+                id: "borderCat",
+                text: "Czy masz bordera kicia?",
+                options: ["Tak", "Nie"]
+            },
+            {
+                id: "reading",
+                text: "Cosik czytasz?",
+                options: ["Tak", "Nie"]
+            },
+            {
+                id: "anime",
+                text: "Oglądasz Anime?",
+                options: ["Tak", "Nie"]
+            },
+            {
+                id: "freaky",
+                text: "Czy jesteś freaky?",
+                options: ["Tak", "JESTEMWKURWEFREAKYSKIBIDIMLODYSIGMAENJOYEROHIOGIRLSLAY"]
+            }
+        ];
+
+        // Funkcja do rozpoczęcia quizu
+        function startQuiz() {
+            const nickname = document.getElementById("nickname").value.trim();
+            if (!nickname) {
+                alert("Podaj swój nick, aby rozpocząć quiz!");
+                return;
+            }
+
+            const quizDiv = document.getElementById("quiz");
+            quizDiv.innerHTML = ""; // Wyczyść poprzednią zawartość
+            quizDiv.style.display = "block";
+
+            pytania.forEach((pytanie) => {
+                const questionDiv = document.createElement("div");
+                questionDiv.classList.add("question-container");
+
+                const label = document.createElement("p");
+                label.textContent = pytanie.text;
+                questionDiv.appendChild(label);
+
+                const select = document.createElement("select");
+                select.id = pytanie.id;
+                pytanie.options.forEach((option) => {
+                    const optionElement = document.createElement("option");
+                    optionElement.value = option;
+                    optionElement.textContent = option;
+                    select.appendChild(optionElement);
+                });
+                questionDiv.appendChild(select);
+
+                quizDiv.appendChild(questionDiv);
+            });
+
+            const submitButton = document.createElement("button");
+            submitButton.textContent = "Zakończ Quiz";
+            submitButton.onclick = () => sprawdzQuiz(nickname);
+            quizDiv.appendChild(submitButton);
+        }
+
+        //sprawdzania wyników quizu
+        function sprawdzQuiz(nickname) {
+            let isError = false;
+            const odpowiedzi = {};
+
+            pytania.forEach((pytanie) => {
+                const selectedAnswer = document.getElementById(pytanie.id).value;
+                odpowiedzi[pytanie.id] = selectedAnswer;
+
+                if (
+                    (pytanie.wykluczone && pytanie.wykluczone.includes(selectedAnswer)) ||
+                    (pytanie.poprawne && !pytanie.poprawne.includes(selectedAnswer))
+                ) {
+                    isError = true;
+                }
+            });
+
+            const resultDiv = document.getElementById("result");
+            if (isError) {
+                resultDiv.textContent = "Nie tym razem kicia. 😔";
+                resultDiv.style.color = "red";
+            } else {
+                const emailParams = {
+                    nickname: nickname, // Nick użytkownika
+                    answers: JSON.stringify(odpowiedzi, null, 2) // Odpowiedzi w formie tekstu na mail
+                };
+
+                emailjs.send("service_fu32qup", "template_8y2v3yn", emailParams)
+                    .then(() => {
+                        resultDiv.textContent = "Graty! Wyniki quizu zostały do mnie wysłane, odpiszę jak bedę mieć czas. 🎉";
+                        resultDiv.style.color = "green";
+                    })
+                    .catch((error) => {
+                        resultDiv.textContent = "Wystąpił błąd podczas wysyłania e-maila. 😞";
+                        resultDiv.style.color = "red";
+                        console.error("EmailJS Error:", error);
+                    });
+            }
+        }
+    </script>
+</body>
+
+</html>
